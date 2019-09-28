@@ -17,6 +17,7 @@ from . WSDataSensors    import WSDataSensors    as WSDataSensors
 from . WSDataBME280     import WSDataBME280     as WSDataBME280
 from . WSDataRemote     import WSDataRemote     as WSDataRemote
 from . WSDataKTY81_110  import WSDataKTY81_110  as WSDataKTY81_110
+from . WSDataLM75       import WSDataLM75       as WSDataLM75
 from . WSDataOWM        import WSDataOWM        as WSDataOWM
 from . WSDataOWMCurrent import WSDataOWMCurrent as WSDataOWMCurrent
 
