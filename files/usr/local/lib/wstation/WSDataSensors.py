@@ -52,7 +52,7 @@ class WSDataSensors(threading.Thread):
     index = 0
     for sensor,unit in self._sensors:
       val = values[index]
-      self._logger.msg("DEBUG","%s: %s: %r %s" % (self._label,sensor,val,unit))
+      self._logger.msg("INFO","%s: %s: %r %s" % (self._label,sensor,val,unit))
       self._values[sensor]['current'] = val
       if not isinstance(val,str):
         self._values[sensor]['min']     = min(val,self._values[sensor]['min'])
