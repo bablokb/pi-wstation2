@@ -1,0 +1,147 @@
+#!/bin/bash
+# --------------------------------------------------------------------------
+# This script installs files and services specific to this project.
+#
+# Install program for data-collector
+#
+# Author: Bernhard Bablok
+# License: GPL3
+#
+# Website: https://github.com/bablokb/pi-wstation2
+#
+# --------------------------------------------------------------------------
+
+PROJECT="pi-wstation"
+
+PACKAGES_data="python3-pip python3-simplejson python3-serial"
+PACKAGES_gui=""
+PACKAGES_all="$PACKAGES_data $PACKAGES_gui"
+
+PIP_PACKAGES_data="Rpi.bme280 pyowm"
+PIP_PACKAGES_gui=""
+PIP_PACKAGES_all="$PIP_PACKAGES_data $PIP_PACKAGES_gui"
+
+install_type="${1:-all}"
+varname="PACKAGES_$install_type"
+PACKAGES="${!varname}"
+varname="PIP_PACKAGES_$install_type"
+PIP_PACKAGES="${!varname}"
+
+# --- basic packages   ------------------------------------------------------
+
+check_packages() {
+  local p
+  for p in "$@"; do
+    echo -en "Checking $p ... " >&2
+    dpkg -s "$p" 2>/dev/null | grep -q "Status.*ok" || return 0
+    echo "ok" >&2
+  done
+  return 1
+}
+
+get_new_packages() {
+  local p packages
+  for p in "$@"; do
+    echo -en "Checking $p ... " >&2
+    if dpkg -s "$p" 2>/dev/null | grep -q "Status.*ok"; then
+      echo "ok" >&2
+    else
+      echo "not installed" >&2
+      packages+=" $p"
+    fi
+  done
+  echo "$packages"
+}
+
+install_packages() {
+  new_packages=$(get_new_packages $PACKAGES)
+  if [ -n "$new_packages" ]; then
+    echo -e "[INFO] installing additional packages" 2>&1
+    apt-get update
+    apt-get -y --no-upgrade install $new_packages
+  fi
+
+  [ -n "$PIP_PACKAGES" -a "$PIP_PACKAGES" != " " ] && pip3 install $PIP_PACKAGES
+}
+
+# --- install specific files   ----------------------------------------------
+
+install_files() {
+  echo -e "[INFO] installing project files" 2>&1
+
+  if [ -f "/etc/${PROJECT}.conf" ]; then
+    # save current configuration
+    mv "/etc/${PROJECT}.conf" "/etc/${PROJECT}.conf.$rand"
+  fi
+
+  for f in `find $(dirname "$0")/../files/ -type f -not -name "*.pyc"`; do
+    target="${f#*files}"
+    target_dir="${target%/*}"
+    [ ! -d "$target_dir" ] && mkdir -p "$target_dir"
+    cp "$f" "$target"
+    chown root:root "$target"
+  done
+  chmod 755 "/usr/local/sbin/wstation-data.py"
+  chmod 755 "/usr/local/sbin/wstation-gui.py"
+  if [ "$install_type" = "data" ]; then
+    rm -f "/usr/local/sbin/wstation-gui.py"
+  elif [ "$install_type" = "gui" ]; then
+    rm -f "/usr/local/sbin/wstation-data.py"
+  fi
+
+  # restore old configuration
+  if [ -f "/etc/${PROJECT}.conf.$rand" ]; then
+    mv -f "/etc/${PROJECT}.conf" "/etc/${PROJECT}.conf.new"
+    mv "/etc/${PROJECT}.conf.$rand" "/etc/${PROJECT}.conf"
+    echo -e "[INFO] new version of configuration file saved to: /etc/${PROJECT}.conf.new" 2>&1
+  fi
+}
+
+# --- configure system   ----------------------------------------------------
+
+configure_system() {
+  # update /boot/config.txt for i2c
+  if ! grep -q "^dtparam=i2c_arm=on" /boot/config.txt ; then
+    echo -e "[INFO] configuring i2c in /boot/config.txt" 2>&1
+    echo "dtparam=i2c_arm=on" >> /boot/config.txt
+  fi
+
+  # update /etc/modules
+  if ! grep -q "^i2c-dev" /etc/modules; then
+    echo -e "[INFO] configuring /etc/modules" 2>&1
+    echo "i2c-dev" >> /etc/modules
+  fi
+
+  # update /boot/config.txt for serial
+  if ! grep -q "^dtoverlay=pi3-miniuart-bt" /boot/config.txt ; then
+    echo -e "[INFO] configuring serial in /boot/config.txt" 2>&1
+    echo "dtoverlay=pi3-miniuart-bt" >> /boot/config.txt
+  fi
+
+  # update /boot/cmdline.txt for serial
+  if grep -q "console=serial0,115200" /boot/cmdline.txt ; then
+    echo -e "[INFO] removing console=serial0 in /boot/cmdline.txt" 2>&1
+    sed -i -e "s/console=serial0,115200//" /boot/cmdline.txt
+  fi
+}
+
+# --- activate service   ----------------------------------------------------
+
+enable_services() {
+  if [ "$install_type" != "gui" ]; then
+    echo -e "[INFO] enabeling wstation-data.service" 2>&1
+    systemctl enable "wstation-data.service"
+  elif [ "$install_type" != "data" ]; then
+    echo -e "[INFO] enabeling wstation-gui.service" 2>&1
+    systemctl enable "wstation-gui.service"
+  fi
+}
+
+# --- main program   --------------------------------------------------------
+
+install_packages
+install_files
+[ "$install_type" != "gui" ] && configure_system
+enable_services
+
+echo "[INFO] installation completed"

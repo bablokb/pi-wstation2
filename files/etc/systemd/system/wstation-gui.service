@@ -1,0 +1,21 @@
+# --------------------------------------------------------------------------
+# Systemd service Definition for wstation-gui.service.
+#
+# The service starts the script /usr/local/sbin/wstation-gui.py
+#
+# Author: Bernhard Bablok
+# License: GPL3
+#
+# Website: https://github.com/bablokb/pi-wstation2
+#
+# --------------------------------------------------------------------------
+
+[Unit]
+Description=Pi Weatherstation Display
+ 
+[Service]
+Type=simple
+ExecStart=/usr/bin/nohup /usr/local/sbin/wstation-gui.py
+
+[Install]
+WantedBy=basic.target
