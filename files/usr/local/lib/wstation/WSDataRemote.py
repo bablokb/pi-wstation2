@@ -22,7 +22,7 @@ try:
   import serial
   simulate = False
 except:
-  self._logger.msg("DEBUG",traceback.format_exc())
+  print(traceback.format_exc())
   simulate = True
 
 BAUD_RATE = 1200
