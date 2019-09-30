@@ -75,6 +75,7 @@ class WSConf(object):
 
     # global SENSORS section
     sensor_info.update  = int(self._get_config('SENSORS','update',600))
+    sensor_info.log_dir = self._get_config('SENSORS','log_dir',None)
 
     # read individual sensors
     groups = self._get_config('SENSORS','groups','').split()
