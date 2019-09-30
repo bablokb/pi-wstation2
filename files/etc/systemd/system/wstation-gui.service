@@ -15,7 +15,7 @@ Description=Pi Weatherstation Display
  
 [Service]
 Type=simple
-ExecStart=/usr/bin/nohup /usr/local/sbin/wstation-gui.py
+ExecStart=/usr/bin/nohup /usr/local/sbin/wstation-gui.py -l NONE
 
 [Install]
 WantedBy=basic.target
