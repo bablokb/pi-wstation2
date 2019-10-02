@@ -338,10 +338,6 @@ InitPic
 	movlw	d'30'
 	call	miditime	; noch 30ms warten
 ;
-; Funkmodul initialisieren:
-; (#include	<rfm12b_rx.inc> erforderlich)
-; (RFM-UP'e Init u. Empfang)
-	call	InitRfm12B
 ;
 ; Adressen zum seriellen LCD mit 2x PCF8574:
 ; PCF-Adr 1, lsb=0 (schreiben zum Slave):
@@ -376,6 +372,10 @@ InitPic
 ;
 ; ############################################################
 	call	testdat
+; Funkmodul initialisieren:
+; (#include	<rfm12b_rx.inc> erforderlich)
+; (RFM-UP'e Init u. Empfang)
+	call	InitRfm12B
 ;
 ; Interrupts erlauben:
 	bsf	STATUS,RP0	; Bank1
@@ -398,8 +398,6 @@ main
 ;
 ; LED (gruen) einschalten mit LedGn=0:
 	bcf	LedGn		; LED gruen ein
-	movlw	d'4'		; 4x 250 ms
-	call	maxitime	; warten
 ;
 	call	empfaenger	; Empfang der Sondendaten (5 Byte) in
 						; rxbyte1 bis rxbyte5
