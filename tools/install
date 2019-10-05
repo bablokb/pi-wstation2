@@ -12,20 +12,10 @@
 # --------------------------------------------------------------------------
 
 PROJECT="pi-wstation"
-
-PACKAGES_data="python3-pip python3-simplejson python3-serial"
-PACKAGES_gui=""
-PACKAGES_all="$PACKAGES_data $PACKAGES_gui"
-
-PIP_PACKAGES_data="Rpi.bme280 pyowm"
-PIP_PACKAGES_gui=""
-PIP_PACKAGES_all="$PIP_PACKAGES_data $PIP_PACKAGES_gui"
-
 install_type="${1:-all}"
-varname="PACKAGES_$install_type"
-PACKAGES="${!varname}"
-varname="PIP_PACKAGES_$install_type"
-PIP_PACKAGES="${!varname}"
+
+PACKAGES="python3-pip python3-simplejson python3-serial"
+PIP_PACKAGES="Rpi.bme280 pyowm"
 
 # --- basic packages   ------------------------------------------------------
 
