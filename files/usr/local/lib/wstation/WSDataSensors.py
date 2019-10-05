@@ -12,7 +12,7 @@
 #
 # ----------------------------------------------------------------------------
 
-import threading
+import os, traceback, threading, datetime
 
 # ----------------------------------------------------------------------------
 
@@ -36,6 +36,12 @@ class WSDataSensors(threading.Thread):
     self._sensors         = group['sensors']
     self._params          = group['params']
 
+    # csv-file for values
+    if options.sensor_info.data_dir:
+      self._csv_file = os.path.join(options.sensor_info.data_dir,group_name+".csv")
+    else:
+      self._csv_file = None
+
     # initialize values
     self._values = {}
     for sensor,_ in self._sensors:
@@ -58,6 +64,20 @@ class WSDataSensors(threading.Thread):
         self._values[sensor]['min']     = min(val,self._values[sensor]['min'])
         self._values[sensor]['max']     = max(val,self._values[sensor]['max'])
       index += 1
+
+    # save to csv
+    if self._csv_file:
+      try:
+        f = open(self._csv_file,"a")
+        now = datetime.datetime.now()
+        f.write(now.strftime("%Y-%m-%d %H:%M:%S"))
+        for val in values:
+          f.write(",%r" % val)
+        f.write("\n")
+        f.flush()
+        f.close()
+      except:
+        self._logger.msg("DEBUG",traceback.format_exc())
 
   # --- return data   --------------------------------------------------------
 
