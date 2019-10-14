@@ -558,7 +558,7 @@ temp_out
 ; INCLUDE für Hilfsprogramme:
 	#include <quarz_4MHz.asm>	;Zeitverzög.-UP'e
 	#include <math_0.asm>		;Mathematik-UP'e
-	#include <software_iic.asm>	;Software-I2C für PIC16Fxxx
+	#include <software-iic.asm>	;Software-I2C für PIC16Fxxx
 	#include <lcdserbus.asm>	;LCD (1/2 Contr.) 2xPCF8574
 	#include <rfm12b_tx.asm>	;RFM12-Funkmodul, Sender
 ;
