@@ -2,14 +2,14 @@
 ; (Ursprung 2TX), aber mit LM75 zur Temperaturmessung
 ; Sonden-Nr. 205
 ; ###############################################################
-; Kennungen:				Strom (Sleep 4,2V?) in µA:
+; Kennungen:				Strom (Sleep 4,2V?) in ÂµA:
 ; 213dez	Garage			(1Kfz)	1,3
 ; 205dez	Bernhard		(2Ber)	
 ; 198dez	Balkon			(3Bal)	1,68
 ; 219dez	Vorratskammer	(4Vor)
 ; usw.
 ; ###############################################################
-; am 30.06.2012 o.k. Stromaufnahme im Sleep-Zustand 1,3-1,7 µA.
+; am 30.06.2012 o.k. Stromaufnahme im Sleep-Zustand 1,3-1,7 ÂµA.
 ; Sleep-Zeit unterschiedlich.
 ; ### LM75 ok., KT raus ###
 ; Ausgabe an LCD's mit 2x PCF u. 1 Controller, z.B. 2x16,
@@ -19,31 +19,31 @@
 ; Ermittlung der Temperatur (16 bit) und "Bordspannung" (16 bit) 
 ; und senden dieser beiden 16 bit-Werte an die Basisstation in
 ; der Wohnstube, zur Anzeige beider Werte auf einem LCD-Display. 
-; Verwendung einer Kennung (8 bit) zur Erhöhung der Übertragungs-
+; Verwendung einer Kennung (8 bit) zur ErhÃ¶hung der Ãœbertragungs-
 ; sicherheit sowie zur Unterscheidung bei Verwendung mehrerer
 ; Temperatursonden auf der gleichen Frequenz.
 ; Sleep-Befehl zum Stromsparen
 ; WDT weckt den PIC in vorgegeb. Zeitabstand (ca. 5 min ? ) auf:
 ; T0-Vorteiler dem WDT zuweisen mit 1:128 und WDTCON-Vorteiler
 ; auf 1:65536 einstellen. WDT= 128*65536/31000 = 271 sec 
-; (= 4,5 min Schlafzeit je Zyklus)oder kürzer:
-; zB. den WDT-Vorteiler kleiner wählen.
+; (= 4,5 min Schlafzeit je Zyklus)oder kÃ¼rzer:
+; zB. den WDT-Vorteiler kleiner wÃ¤hlen.
 ; Betriebsspannung Lipo 1s = 3,0-4,2V,
-; für Spannungsmessungen steht eine Uref=2,5V zur Verfügung,
-; die über Mosfet für die Messung dazugeschaltet wird. 
-; Akkuspannungsmessung über Spannungsteiler 1:2, keine Pegel-
+; fÃ¼r Spannungsmessungen steht eine Uref=2,5V zur VerfÃ¼gung,
+; die Ã¼ber Mosfet fÃ¼r die Messung dazugeschaltet wird. 
+; Akkuspannungsmessung Ã¼ber Spannungsteiler 1:2, keine Pegel-
 ; anpassung PIC RFM, da Betrieb mit 1 Lipozelle (3,0-4,2V).
 ; ###############################################################
-; Bestückung:
-; Pull-up-Widerstände ein für Portpin RB7, 
-; kein I-O-C für Port A und B.
+; BestÃ¼ckung:
+; Pull-up-WiderstÃ¤nde ein fÃ¼r Portpin RB7, 
+; kein I-O-C fÃ¼r Port A und B.
 ;
 ; Port A:
 ; 	RA0	AN0, ADC-Eingang, halbierte Betriebsspannung messen
-;	RA1	AN1, Eingang für Uref=2,5V
+;	RA1	AN1, Eingang fÃ¼r Uref=2,5V
 ;	RA2	AN2, ADC-Eingang, Umgebungstemperatur messen
 ;	RA3	MCLR\
-;	RA4	MOSEA, Digital-Ausgang über 10K an G vom P-Ch.-MOSFET *)
+;	RA4	MOSEA, Digital-Ausgang Ã¼ber 10K an G vom P-Ch.-MOSFET *)
 ;	RA5	Digitalausg., frei
 ;
 ;	*) RA4=1, MOSFET aus (gesperrt), RA4=0, MOSFET ein (leitend)
@@ -54,9 +54,9 @@
 ;	RB6	Ausgang SCK
 ;	RB7	Eingang I2CENA: RB7=0 erlaubt an RC0-3 Software-I2C
 ;
-; Port C:	Software-I2C-Modul für Prüfzwecke über ext. Adapter
+; Port C:	Software-I2C-Modul fÃ¼r PrÃ¼fzwecke Ã¼ber ext. Adapter
 ;		(Wenn RB7=1, Modul deaktiviert, RC0-3 nicht beschaltet u.
-;		wegen Aufladungsgefahr alles als Ausgänge geschaltet ! )
+;		wegen Aufladungsgefahr alles als AusgÃ¤nge geschaltet ! )
 ;		RB7=1   / RB7=0, I2C aktiv :
 ;	RC0	Ausgang, frei
 ;	RC1	Ausgang, frei
@@ -67,14 +67,14 @@
 ;	RC6	Ausgang, frei / SCL out
 ;	RC7	Ausgang SDO an SDI des Funkmoduls
 ;
-; 4 MHz-Quarz - interner Takt 1 MHz / Tintosc= 1 µs 
+; 4 MHz-Quarz - interner Takt 1 MHz / Tintosc= 1 Âµs 
 ;
 ; Master Rev 0, SPI Mode 0,0
 ;
 ; Sendefrequenz 868,55 MHz (F=1710 dez = 6AE hex), 
-; SRD 868,0-868,6 MHz: für allgem. Nutzung, max. ERP 25mW
+; SRD 868,0-868,6 MHz: fÃ¼r allgem. Nutzung, max. ERP 25mW
 ; / dc<1%, +-30 KHz Frequenzhub (M=1), 
-; möglichst kleine Sendeleistung -17 dB (P=7)
+; mÃ¶glichst kleine Sendeleistung -17 dB (P=7)
 ; verbaut  RFM12B, Version A 1.0
 ; (PLL Setting Command CC77 hex = default).
 ; 
@@ -87,12 +87,12 @@
 	radix hex
 ;
 ; PIC-Konfiguration:
-; ext. Reset über Pin 1 (MCLR) erlauben u. INTOSCIO, sowie 72ms Verzögerung
-; für RFM, WDT einschalten, alle anderen Config-Funktionen OFF:
+; ext. Reset Ã¼ber Pin 1 (MCLR) erlauben u. INTOSCIO, sowie 72ms VerzÃ¶gerung
+; fÃ¼r RFM, WDT einschalten, alle anderen Config-Funktionen OFF:
  __CONFIG  _MCLRE_ON & _INTOSCIO & _PWRTE_ON & _BOR_OFF & _WDT_ON & _CP_OFF & _FCMEN_OFF & _IESO_OFF
 ;
 ;###############################################################
-; UP-Variablen für Zeitverzögerungen, Modul: quarz_xMHz.asm
+; UP-Variablen fÃ¼r ZeitverzÃ¶gerungen, Modul: quarz_xMHz.asm
 miniteil	equ	0x20	
 miditeil	equ	0x21	
 maxiteil	equ	0x22
@@ -100,7 +100,7 @@ time0		equ	0x23
 time1		equ	0x24
 time2		equ	0x25
 ;
-; Registerdefinitionen für SPI/Funkmodul:
+; Registerdefinitionen fÃ¼r SPI/Funkmodul:
 hibyte		equ	0x26	;high byte - sent to SPI
 lobyte		equ	0x27	;low byte - sent to SPI
 ;
@@ -112,11 +112,11 @@ txbyte3		equ	0x2a	;Bordspannung, low-Teil
 txbyte4		equ	0x2b	;Temperatur, high-Teil
 txbyte5		equ	0x2c	;Temperatur, low-Teil
 ; Messungen:
-OffsetTemp	equ	0x2d	;Korrekturwert für Akku-U-Messung
-NrMessung	equ	0x2e	;Zähler für die 64 Temp.-Messungen
+OffsetTemp	equ	0x2d	;Korrekturwert fÃ¼r Akku-U-Messung
+NrMessung	equ	0x2e	;ZÃ¤hler fÃ¼r die 64 Temp.-Messungen
 Flags		equ	0x2f	;Negativ-Temp.
 ;
-; Registerdefinitionen für Matheroutinen UP math_0.asm:
+; Registerdefinitionen fÃ¼r Matheroutinen UP math_0.asm:
 f0			equ	0x30
 f1			equ	0x31
 f2			equ	0x32
@@ -133,7 +133,7 @@ sw0			equ	0x3c
 sw1			equ	0x3d
 ;
 ;
-; Registerdefinitionen für I2C
+; Registerdefinitionen fÃ¼r I2C
 buf			equ	0x41	; I2C-UP'e
 count		equ	0x42	; I2C-UP'e
 BcdDaten	equ	0x43	; UP Bcd4Bit
@@ -146,7 +146,7 @@ LcdStat		equ	0x47
 PcfAdr1		equ	0x48	; 
 PcfAdr2		equ	0x49	; 
 ;
-;Register für UP Hex2Dez16 und 8:
+;Register fÃ¼r UP Hex2Dez16 und 8:
 HdZT		equ	0x4a
 HdT			equ	0x4b
 HdH			equ	0x4c
@@ -154,7 +154,7 @@ HdZ			equ	0x4d
 HdE			equ	0x4e
 HdX			equ	0x4f
 ;
-; Register für Testausgaben (Wartungsmodul):
+; Register fÃ¼r Testausgaben (Wartungsmodul):
 lm_high		equ	0x50	; High-Rohwert LM75
 lm_low		equ	0x51	; Low-Rohwert LM75
 hexbyte		equ	0x52	; UP HexByteAscii
@@ -167,16 +167,16 @@ adc_h		equ	0x58	; Bit9-8 ADC Rohwert
 adc_l		equ	0x59	; Bit7-0 ADC Rohwert
 ;
 ; Definitionen fuer RFM12B:	
-#define	nsel	PORTB,5	; Aktivierung RFM über nSEL
+#define	nsel	PORTB,5	; Aktivierung RFM Ã¼ber nSEL
 #define	rfsdo	PORTB,4	; Bereit-Melde-Leitung SDO des Funk-
 						; moduls, liegt an SDI des PIC's, 
 						; also an Port B,4 (Eingang)!
 ;
-; Portpinzuweisung für MOSFET-Gate
+; Portpinzuweisung fÃ¼r MOSFET-Gate
 #define	MOSEA	PORTA,4
 ;
-; Definitionen für Software-I2C-Portpin's:
-; (Konstanten für I2C festlegen, Pinbelegung, für Port C)
+; Definitionen fÃ¼r Software-I2C-Portpin's:
+; (Konstanten fÃ¼r I2C festlegen, Pinbelegung, fÃ¼r Port C)
 ; 	RC6	CLK out
 ;	RC3	CLK in
 ;	RC4	SDA out	
@@ -198,10 +198,10 @@ adc_l		equ	0x59	; Bit7-0 ADC Rohwert
 #define	LcdSE2	LcdByte,6	;E2 hier unbenutzt
 #define	LcdBel	LcdByte,7	;Beleuchtung
 ;
-; Schalter für Software-I2C-Aktivierung/-Deaktivierung
+; Schalter fÃ¼r Software-I2C-Aktivierung/-Deaktivierung
 #define	I2CEN	PORTB,7	;I2CEN=0 erlaubt I2C an RC0-3
 ;
-; Definitionen für die Messungen:
+; Definitionen fÃ¼r die Messungen:
 #define	Negativ		Flags,6	;Flags,6 = 1, Temperatur ist neg.
 #define	TempVorz	f1,7	;Temperaturvorz. der Sonde
 ;
@@ -209,7 +209,7 @@ adc_l		equ	0x59	; Bit7-0 ADC Rohwert
 ; der Wert OffsetUx dient der Kalibrierung der Spannungsmess.,
 ; der Standard ist 40 (mV);
 ; zeigt der PIC eine um x mV zu kleine Spannung an, 
-; muß Offset um x erhöht werden.
+; muÃŸ Offset um x erhÃ¶ht werden.
 ;
 ; OFFSETs der Sonde Nr. 205:
 #define	OffsetU1	d'1'	;Offset in mV U-Messung
@@ -221,10 +221,10 @@ adc_l		equ	0x59	; Bit7-0 ADC Rohwert
 	goto	InitPic
 ;
 	org	0x04
-; Platz für ISR-Sprungbefehl
+; Platz fÃ¼r ISR-Sprungbefehl
 ;
 	org	0x06
-; Platz für Sprungtabellen
+; Platz fÃ¼r Sprungtabellen
 ;
 ; Konfiguration der PIC-Ports:
 InitPic
@@ -250,44 +250,44 @@ InitPic
 	; Bank1
 	bcf		STATUS,RP1
 	bsf		STATUS,RP0
-	movlw	b'00000111'	; (Analog-) Eingänge für AN0-2,
-	movwf	TRISA		; der Rest Ausgänge
-	movlw	b'00010000'	; RB4/SDI ist Eingang, für RFM
+	movlw	b'00000111'	; (Analog-) EingÃ¤nge fÃ¼r AN0-2,
+	movwf	TRISA		; der Rest AusgÃ¤nge
+	movlw	b'00010000'	; RB4/SDI ist Eingang, fÃ¼r RFM
 	movwf	TRISB
-	clrf	TRISC		; alles Ausgänge
+	clrf	TRISC		; alles AusgÃ¤nge
 ; Bank1, OPTION_REG
 	; nach POR stehen alle bits des OPTION-Registers auf 1
 	bcf		OPTION_REG,NOT_RABPU
 			; bit 7 = 0, NOT_RABPU=0, PortA-B-pull-ups enable,
-			; Achtung: gilt für beide Ports !
+			; Achtung: gilt fÃ¼r beide Ports !
 			; bit 3 = 1, Vorteilerzuweisung zum WDT (PSA)
 			; bit  2:0 = 111, WDT-Vorteiler 1:128
 ; Interrupt on change an PortA (RA2, RA5)
-	; NOT_RABPU im OPTION_REG muß erlaubt sein !
-	; pull-up-Widerstände einschalten, 1=enable
+	; NOT_RABPU im OPTION_REG muÃŸ erlaubt sein !
+	; pull-up-WiderstÃ¤nde einschalten, 1=enable
 	; alle Bits des Registers WPUA sind nach POR gesetzt !
 	clrf	WPUA		; alle pull-ups disabled
 ;
-; Int.-On-Change für RA2 u. RA5 auswählen, 1=enable
-	; Register IOCA ist nach POR gelöscht
+; Int.-On-Change fÃ¼r RA2 u. RA5 auswÃ¤hlen, 1=enable
+	; Register IOCA ist nach POR gelÃ¶scht
 ;
-; für PortB für RB7 ein pull-up aktivieren u. keine I-O-C:
+; fÃ¼r PortB fÃ¼r RB7 ein pull-up aktivieren u. keine I-O-C:
 	; Bank2
 	bsf		STATUS,RP1
 	bcf		STATUS,RP0
 	; alle Bits von WPUB sind nach POR gesetzt!
-	clrf	WPUB		; keine pull-ups für PortB
+	clrf	WPUB		; keine pull-ups fÃ¼r PortB
 	bsf		WPUB,WPUB7	; nur RB7 pull-up
-	;  IOCB ist nach POR gelöscht, also kein I-O-C
+	;  IOCB ist nach POR gelÃ¶scht, also kein I-O-C
 ;
-; Konfiguration des ADC an AN0 Meßeingang, AN1 Ref.-U-Eingang:
+; Konfiguration des ADC an AN0 MeÃŸeingang, AN1 Ref.-U-Eingang:
 	;Bank0
 	bcf		STATUS,RP1
 	movlw	b'11000000' ; Dat. rechtsb., Vref, AN0, ADC aus
 	movwf	ADCON0
 	; Bank1
 	bsf		STATUS,RP0
-	; nach POR sind alle bits von ADCON1 gelöscht
+	; nach POR sind alle bits von ADCON1 gelÃ¶scht
 	clrf	ADCON1		 ; sicherheitshalber
 	bsf		ADCON1,ADCS0 ; ADC-Takt Fosz/8
 ;
@@ -295,7 +295,7 @@ InitPic
 ;	bsf		ADCON1,ADCS2 ;  Fosz/16
 ;
 	; kein ADC-Interrupt, weil Bit ADIE in Reg. PIE1 
-	; nach POR gelöscht ist.
+	; nach POR gelÃ¶scht ist.
 ;
 ; WDT= 128*4096/31000 = 17 sec  /
 ; = 4,5 min Schlafzeit je Zyklus):
@@ -312,7 +312,7 @@ InitPic
 	movlw	b'00010111'	; WDT-Teilerfaktor 1:65536
 	movwf	WDTCON
 ;
-; Konfiguration MSSP für SPI-Mode 0,0
+; Konfiguration MSSP fÃ¼r SPI-Mode 0,0
 	movlw	0xc0		; SPI-Mode 0,0
 	movwf	SSPSTAT
 	; Bank0
@@ -350,11 +350,11 @@ InitPic
 	call	spi16		; RFM im Sleep-Modus
 ;
 ; Schalter I2C Ein/Aus (Jumper) auf I2CEN=0/I2CEN=1:
-	btfss	I2CEN		; wenn I2CEN=1, überspringe nä. Bef.
+	btfss	I2CEN		; wenn I2CEN=1, Ã¼berspringe nÃ¤. Bef.
 	goto	Wartung		; I2CEN=0, Jumper gesteckt, Wartung
 						; I2CEN=1, keine Wartung
 ; keine Wartung
-; Spannungsmodul abschalten (Uref und U-Meß-Teiler)
+; Spannungsmodul abschalten (Uref und U-MeÃŸ-Teiler)
 	bsf		MOSEA		; MOSEA=1, P-CH. MOSFET aus 
 ;
 ; LM75 in den shutdown-Modus versetzen:
@@ -362,19 +362,19 @@ InitPic
 ;
 ; Stromsparen I2C-Hardware:
 	call	iicbus_off		; I2CBus aus, Stromsparen,
-	; die PortC-Pins RC3 bis RC6 als Eingänge programmiert!
+	; die PortC-Pins RC3 bis RC6 als EingÃ¤nge programmiert!
 ; ############################################################
 ; ############################################################
 loop
-	clrwdt				; WDT löschen	
+	clrwdt				; WDT lÃ¶schen	
 	sleep				; PIC in den Sleep-Modus versetzen
 ; wecken durch WDT nach der vorprogrammierten Zeit in WDTCON,
 ; dann weiter bei Pkt. 1.
 ;
 loopW
 ;
-; 1. an AN0 Akkuspannung überprüfen:
-	; Meßmodul einschalten
+; 1. an AN0 Akkuspannung Ã¼berprÃ¼fen:
+	; MeÃŸmodul einschalten
 	bcf		MOSEA		; MOSEA=0, P-CH. MOSFET ein
 	; ADC einschalten
 	bsf		ADCON0,ADON	; ADC ein
@@ -382,11 +382,11 @@ loopW
 	call	AkkuMess	; Akku-U messen
 ;
 ; ADC wieder ausschalten und
-; Meßmodul ausschalten:
+; MeÃŸmodul ausschalten:
 	bcf		ADCON0,ADON ; ADC aus
 	bsf		MOSEA		; MOSEA=1, P-CH. MOSFET aus
 ;
-; 2. Temp.meßwert des LM75 (I2C) ermitteln und speichern
+; 2. Temp.meÃŸwert des LM75 (I2C) ermitteln und speichern
 ; Energiesparmodus vorbereiten
 ; (mit software_iic.asm)
 	call	iicbus_on	; Realisierung des I2C-Adapter1
@@ -401,7 +401,7 @@ loopW
 	call	iicbus_off	; I2C-Port aus, Stromsparen
 ;
 ; ###########################################################
-	btfss	I2CEN		; wenn I2CEN=1, überspringe nä. Bef.
+	btfss	I2CEN		; wenn I2CEN=1, Ã¼berspringe nÃ¤. Bef.
 	goto	LcdAusgabe	;I2CEN=0
 						;I2CEN=1
 rfm_wecken
@@ -417,7 +417,7 @@ rfm_wecken
 	movlw	d'7'
 	call	miditime	; 7 ms warten
 ; Daten senden
-	call	senden		; Übertragung von txbyte1-5
+	call	senden		; Ãœbertragung von txbyte1-5
 ;
 ; Funkmodul schlafen legen
 	; Power Management Command 0x8201 an RFM
@@ -476,7 +476,7 @@ LcdAusgabe
 	movwf	f0
 	movf	txbyte3,w
 	movwf	f1
-	call	OutDez4		; Daten für UP über f1, f0
+	call	OutDez4		; Daten fÃ¼r UP Ã¼ber f1, f0
 	movlw	' '
 	call	OutLcdDat
 	movlw	'm'
@@ -496,11 +496,11 @@ LcdAusgabe
 	movwf	f0
 	call	HexByteAscii
 ;	
-; Wandlung u. Temperaturausg. posit. LM75-Meßwerte
-; High-Byte, Bit 7 testen (0=pos. oder 1=neg. Meßwert)
+; Wandlung u. Temperaturausg. posit. LM75-MeÃŸwerte
+; High-Byte, Bit 7 testen (0=pos. oder 1=neg. MeÃŸwert)
 	bcf		Negativ		; Vorzeichenbit=0 (UP OutMinus)
 	btfss	lm_high,7	; wenn Bit7=1, ueberspr. nae. Bef.
-	goto	temp_out	; Bit7=0, Meßwert positiv
+	goto	temp_out	; Bit7=0, MeÃŸwert positiv
 						; Bit7=1, Zweierkompliment
 ; Bit7=1, lm_high bitweise negieren 
 	bsf		Negativ		; Vorzeichenbit=1 (UP OutMinus)
@@ -511,7 +511,7 @@ LcdAusgabe
 	addwf	lm_high,f	; lm_high=lm_high + 1
 ;
 temp_out
-; Temperaturausgabe in °C
+; Temperaturausgabe in Â°C
 	movlw	0xc8		; Ausgabe in Zeile 2, ab Spalte 8:
 	call	OutLcdCon
 ;
@@ -526,7 +526,7 @@ temp_out
 	btfsc	lm_low,7	; low-byte, Bit 7 testen auf 0
 	movlw	'5'			; w='5'
 	call	OutLcdDat	; ASCII-0 oder 5 ausgeben
-	call	OutCelsius	; '°C' ausgeben
+	call	OutCelsius	; 'Â°C' ausgeben
 ;
 ; ADC-U-Rohwert in Zeile 3 ausgeben
 	movlw	0x94		; Ausgabe in Zeile 3, ab Spalte 0
@@ -555,10 +555,10 @@ temp_out
 	goto	loopW
 ;
 ; #########################################################
-; INCLUDE für Hilfsprogramme:
-	#include <quarz_4MHz.asm>	;Zeitverzög.-UP'e
+; INCLUDE fÃ¼r Hilfsprogramme:
+	#include <quarz_4MHz.asm>	;ZeitverzÃ¶g.-UP'e
 	#include <math_0.asm>		;Mathematik-UP'e
-	#include <software_iic.asm>	;Software-I2C für PIC16Fxxx
+	#include <software_iic.asm>	;Software-I2C fÃ¼r PIC16Fxxx
 	#include <lcdserbus.asm>	;LCD (1/2 Contr.) 2xPCF8574
 	#include <rfm12b_tx.asm>	;RFM12-Funkmodul, Sender
 ;
@@ -593,7 +593,7 @@ sd_off
 	call	i2c_tx		; LM75 zum schreiben adressieren
 	movlw	0x01		; 0000 0001
 	call	i2c_tx		; Conf adressieren
-						; Bit0 im Conf-Register löschen
+						; Bit0 im Conf-Register lÃ¶schen
 	movlw	0x00		; Bit0=0
 	call	i2c_tx		; Normalbetrieb ein
 	call	i2c_off		; Bus freigeben
@@ -610,12 +610,12 @@ iicbus_on
 	bsf		TRISC,5		; TRISC,5=1 Input
 	bcf		TRISC,6		; TRISC,6=0 Ausgang
 	bcf		STATUS,RP0	; Bank0
-	call	i2c_reset	; Bus zurücksetzen
+	call	i2c_reset	; Bus zurÃ¼cksetzen
 	return
 ;
 ; #########################################################
 ; UP iicbus_off: Ausschalten des I2C-Busses 
-; (Stromsparfunktion, alle 4 PortCpins werden Eingänge)
+; (Stromsparfunktion, alle 4 PortCpins werden EingÃ¤nge)
 ; #########################################################
 iicbus_off
 	bsf		STATUS,RP0	; Bank1
@@ -628,7 +628,7 @@ iicbus_off
 ;
 ; ###########################################################
 ; UP TempMess: Temp.-Messung mit LM75 per I2C u. speichern,
-; I2C-Bus muß vorher eingeschaltet werden.	28.9.19 
+; I2C-Bus muÃŸ vorher eingeschaltet werden.	28.9.19 
 ; ###########################################################
 TempMess
 	call	i2c_on		; START, I2C-Bus ein
@@ -652,16 +652,16 @@ TempMess
 	return
 ;
 ; ###########################################################
-; UP AkkuMess: U-Messung per ADC, Messmodul muß vorher einge-
+; UP AkkuMess: U-Messung per ADC, Messmodul muÃŸ vorher einge-
 ; schaltet werden
 ; ###########################################################
 AkkuMess
-	; Messung durchführen:
+	; Messung durchfÃ¼hren:
 	clrf	f1
 	clrf	f0
 	clrf	xw1
 	clrf	xw0
-	call	UMessen1 	; ADC mißt Spannung, wandeln nach
+	call	UMessen1 	; ADC miÃŸt Spannung, wandeln nach
 						; xw1, xw0
 ;
 	movf	xw1,w
@@ -670,7 +670,7 @@ AkkuMess
 	movwf	f0
 	call	mv			; Startwert und Ergebnis in  in f1, f0
 ;
-; Spannungsteiler- und Meßfühlerkorrektur:
+; Spannungsteiler- und MeÃŸfÃ¼hlerkorrektur:
 	clrf	xw1
 	movlw	OffsetU1
 	movwf	xw0
@@ -681,7 +681,7 @@ AkkuMess
 	movf	f0,w
 	movwf	txbyte2
 	movf	f1,w
-	movwf	txbyte3		; Meßwert steht nun in txbyte2,3
+	movwf	txbyte3		; MeÃŸwert steht nun in txbyte2,3
 	return
 ;
 ; ############################################################
@@ -714,11 +714,11 @@ UM_warten
 	return
 ;
 ;###############################################################
-;UP mv: Wandlung des ADC-Wert in Millivolt (binär)
+;UP mv: Wandlung des ADC-Wert in Millivolt (binÃ¤r)
 ; Der ADC-Wert steht in f1,f0
 ; Ergebnis steht in f1,f0
 ;###############################################################
-mv	; zunächst die Multiplikation mal 5
+mv	; zunÃ¤chst die Multiplikation mal 5
 	movf	f0,W
 	movwf	xw0
 	movf	f1,W
@@ -753,7 +753,7 @@ mv	; zunächst die Multiplikation mal 5
 ;5. Temperaturregister in BCD umrechen (3-st.), Vorzeichen beacht.
 ;################################################################
 TemperaturX1
-	; Startwert für korrektes Runden (32+50)
+	; Startwert fÃ¼r korrektes Runden (32+50)
 	clrf	f1
 	movlw	D'82'
 	movwf	f0
@@ -766,11 +766,11 @@ UMessung
 	call	Add16 		; 16-bit add: f = f + xw
 	decfsz	NrMessung,F
 	goto	UMessung
-	return				; Meßwert steht in f
+	return				; MeÃŸwert steht in f
 ;
 ; ################################################################
-TemperaturXS			; nur für die Sonden (Vorzeichen)
-; Meßwert wird in f übernommen
+TemperaturXS			; nur fÃ¼r die Sonden (Vorzeichen)
+; MeÃŸwert wird in f Ã¼bernommen
 	; Division durch 101
 	movlw	0x00		; 101 = 00 65 h
 	movwf	xw1
@@ -778,8 +778,8 @@ TemperaturXS			; nur für die Sonden (Vorzeichen)
 	movwf	xw0
 	call	Div16		; Division f:= f / xw
 ;
-; 150°C Offset entfernen
-; (f1)=0, bei Temp.werten bis 255°C ist nur f0 belegt
+; 150Â°C Offset entfernen
+; (f1)=0, bei Temp.werten bis 255Â°C ist nur f0 belegt
 						; angenommen: positive Temperatur
 	clrf	xw1
 	movf	OffsetTemp,W
@@ -804,19 +804,19 @@ Positiv
 ; setzt voraus, das vor UP-Aufruf rxbyte5 (Vorzeichen) 
 ; nach f1 umgespeichert wurde.
 ; Je nach Temperatur-Vorzeichen wird Negativ gesetzt (Minuswert)
-; oder gelöscht (Plustemperatur).
+; oder gelÃ¶scht (Plustemperatur).
 ; #define TempVorz
 ;###############################################################
 Vorzeichen
-	btfsc	TempVorz	; wenn TempVorz=0, überspringe nä. Bef.
+	btfsc	TempVorz	; wenn TempVorz=0, Ã¼berspringe nÃ¤. Bef.
 	goto	minusV		; TempVorz=1: springe zu minusT
 	bcf		Negativ		; TempVorz=0: Negativ=0, Temp. positiv
 	return
 ;
 minusV					; TempVorz=1
 	bsf		Negativ		; Negativ=1, Temp. negativ
-	clrf	f1			; muß gelöscht werden, da es im folgenden
-						; Ausgabe-UP sonst die Werte verfälscht. 
+	clrf	f1			; muÃŸ gelÃ¶scht werden, da es im folgenden
+						; Ausgabe-UP sonst die Werte verfÃ¤lscht. 
 	return
 ;
 ;###############################################################
@@ -826,7 +826,7 @@ minusV					; TempVorz=1
 ; Negativ=1, Temp. ist negativ (Minuszeichen ausgeben).
 ;###############################################################
 OutMinus	;Flags,6 = Negativ = 1, Temp. ist negativ
-	btfsc	Negativ		;wenn Negativ=0, überspringe nä. Bef.
+	btfsc	Negativ		;wenn Negativ=0, Ã¼berspringe nÃ¤. Bef.
 	goto	minusT		; Negativ=1, (Minustemp.)
 	movlw	' '			;gebe ein Leerzeichen (Plustemp.)
 	call	OutLcdDat	;am LCD aus
@@ -838,7 +838,7 @@ minusT
 	return
 ;
 ;==================================
-; String '°C' am LCD ausgeben
+; String 'Â°C' am LCD ausgeben
 ;==================================
 OutCelsius
 	movlw	0xdf
@@ -854,11 +854,11 @@ OutCelsius
 HexByteAscii
 	movwf	hexbyte
 	swapf	hexbyte,W	;oberes Halbbyte zuerst
-	andlw	0x0f		;die vorderen 4 Bit in W löschen
+	andlw	0x0f		;die vorderen 4 Bit in W lÃ¶schen
 	call	AscOut		;Hex in W umwandeln in Ascii-Code
 				;u. an LCD ausgeben
 	movf	hexbyte,W	;unteres Halbyte
-	andlw	0x0f		;die vorderen 4 Bit in W löschen
+	andlw	0x0f		;die vorderen 4 Bit in W lÃ¶schen
 	call	AscOut
 ;	movlw	' '		;Leerzeichen ausgeben
 ;	call	OutLcdDat
@@ -873,7 +873,7 @@ AscOut
 	movwf	wert
 	movlw	0x0a
 	subwf	wert,W
-	btfsc	STATUS,C	;wenn C=0, überspr. nä. Bef.
+	btfsc	STATUS,C	;wenn C=0, Ã¼berspr. nÃ¤. Bef.
 	goto	A_F
 	movlw	0x30		;
 	addwf	wert,W
@@ -881,14 +881,14 @@ AscOut
 	return
 A_F
 	movlw	0x37		;=movlw '7' Ausgabe A-F oder 0x??
-	addwf	wert,W		;für Ausgabe a-f
+	addwf	wert,W		;fÃ¼r Ausgabe a-f
 	call	OutLcdDat
 	return
 ;
 
 ; ###############################################################
 ; 16 Bit Wert (f1,f0) auf LCD dezimal 4-stellig anzeigen mit
-; Vornullen-Unterdrückung
+; Vornullen-UnterdrÃ¼ckung
 ; ###############################################################
 OutDez4				;16-bit (f0,f1) als 4-st. Dez (BCD) zum Lcd
 	call	Hex2Dez16	;Wandlung
@@ -905,7 +905,7 @@ OutDez4				;16-bit (f0,f1) als 4-st. Dez (BCD) zum Lcd
 ;
 ;################################################################
 ; 16 Bit Wert (f1,f0) auf LCD dezimal 3-stellig anzeigen mit 
-; Vornullen-Unterdrückung
+; Vornullen-UnterdrÃ¼ckung
 ;################################################################
 OutDez3				;16-bit (f0,f1) als 3-st. Dez (BCD) zum Lcd
 	call	Hex2Dez8	;Wandlung
@@ -922,12 +922,12 @@ Vornull
 	iorwf	Fehler,F
 	movf	Fehler,F	;Test auf 0
 	btfss	STATUS,Z	;bisher alles 0 ?
-	goto	Bcd4Bit		;nein, UP sichert Rücksprungadr.
+	goto	Bcd4Bit		;nein, UP sichert RÃ¼cksprungadr.
 	movlw	' '			;ja, Leerzeichen ausgeben
-	goto	OutLcdDat	;UP sichert Rücksprungadr.
-; Das return fehlt hier absichtlich, weil die beiden goto-Sprünge
-; zu je einem UP führen, das mit der gespeicherten Rückkehradress.
-; des UP Vornull den Rücksprung sichert.
+	goto	OutLcdDat	;UP sichert RÃ¼cksprungadr.
+; Das return fehlt hier absichtlich, weil die beiden goto-SprÃ¼nge
+; zu je einem UP fÃ¼hren, das mit der gespeicherten RÃ¼ckkehradress.
+; des UP Vornull den RÃ¼cksprung sichert.
 ;
 ;##############################################################
 ;UP Bcd4Bit: low-4-Bit als BCD-Zahl (Dez. 0-9) ausgeben
@@ -1005,7 +1005,7 @@ Hex2Dez1
 HdLoop
 	incf	HdX,F
 	call	Sub16		;
-	btfss	STATUS,C	;Überlauf
+	btfss	STATUS,C	;Ãœberlauf
 	goto	HdLoop		;Stelle 1 mehr
 	call	Add16
 	return
