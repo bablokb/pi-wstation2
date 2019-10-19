@@ -42,6 +42,6 @@ class WSDataLM75(wstation.WSDataRemote):
     u = (u_high << 8) + u_low
     fraction = 0.5*(t_low >> 7)        # bit7==1: 0.5, else 0.0
     sign = -1 if t_high >> 7 else +1   # bit7==0: temperature > 0
-    t = sign * twos_comp(t_high) + fraction
+    t = sign * twos_comp(t_high,8) + fraction
     return [t,u]
 
