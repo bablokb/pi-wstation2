@@ -36,7 +36,7 @@ class WSDataLM75(wstation.WSDataRemote):
   def convert_data(self,data):
     """ convert data to temperature and voltage """
 
-    [u_low,u_high,t_low,t_high] = data
+    [u_low,u_high,t_high,t_low] = data
     self._logger.msg("DEBUG","sid: %d, U:(%d %d), T:(%d %d)" %
                                          (self._sid,u_low,u_high,t_low,t_high))
     u = (u_high << 8) + u_low
