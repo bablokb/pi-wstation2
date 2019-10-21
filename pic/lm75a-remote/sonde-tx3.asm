@@ -11,7 +11,7 @@
 ; ###############################################################
 ; am 30.06.2012 o.k. Stromaufnahme im Sleep-Zustand 1,3-1,7 µA.
 ; Sleep-Zeit unterschiedlich.
-; ### LM75 ok., KT raus ###
+; ### LM75 ok., KT raus ###			 ==> Senden geht nicht mehr !
 ; Ausgabe an LCD's mit 2x PCF u. 1 Controller, z.B. 2x16,
 ; TC1602E: Daten: 0100000 Control: 0100111	O.K. 05.07.2012
 ; ###############################################################
@@ -41,7 +41,7 @@
 ; Port A:
 ; 	RA0	AN0, ADC-Eingang, halbierte Betriebsspannung messen
 ;	RA1	AN1, Eingang für Uref=2,5V
-;	RA2	AN2, ADC-Eingang, Umgebungstemperatur messen
+;	RA2	Digitalausg., frei
 ;	RA3	MCLR\
 ;	RA4	MOSEA, Digital-Ausgang über 10K an G vom P-Ch.-MOSFET *)
 ;	RA5	Digitalausg., frei
@@ -165,12 +165,17 @@ tos_high	equ	0x56
 tos_low		equ	0x57
 adc_h		equ	0x58	; Bit9-8 ADC Rohwert
 adc_l		equ	0x59	; Bit7-0 ADC Rohwert
+umvh		equ	0x5a	; U in mV, Highwert
+umvl		equ	0x5b	; U in mV, Lowwert
 ;
 ; Definitionen fuer RFM12B:	
 #define	nsel	PORTB,5	; Aktivierung RFM über nSEL
 #define	rfsdo	PORTB,4	; Bereit-Melde-Leitung SDO des Funk-
 						; moduls, liegt an SDI des PIC's, 
 						; also an Port B,4 (Eingang)!
+; Fehlersuche-LED, gelb:
+#define	ledge	PORTA,2	; TRISA,2=0 (Ausgang),
+						; A an +Vdd, K an RA2
 ;
 ; Portpinzuweisung für MOSFET-Gate
 #define	MOSEA	PORTA,4
@@ -232,11 +237,12 @@ InitPic
 	bcf		STATUS,RP1
 	bcf		STATUS,RP0
 	clrf	PORTA
+	bsf		ledge		; RA2=1 für LED-TEST
 ;
 ;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ; Kennungen der Sonden:
 	movlw	d'205'			; Dez. Sonden Nr. 205
-	movwf	txbyte1			; Kennung (0xCD hex)
+	movwf	txbyte1			; Kennung
 ;
 ;@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ; Bank2, Register ANSEL, ANSELH: 
@@ -245,16 +251,16 @@ InitPic
 	clrf	ANSEL		; AN0-7 digital I/O => RA0-7
 	bsf		ANSEL,ANS0	; RA0 => AN0 (U-Mess.)
 	bsf		ANSEL,ANS1	; RA1 => AN1 (Uref)
-	bsf		ANSEL,ANS2	; RA2 => AN2 (Temp.mess.)
+;
 	clrf	ANSELH		; AN8-11 digital I/O
 	; Bank1
 	bcf		STATUS,RP1
 	bsf		STATUS,RP0
-	movlw	b'00000111'	; (Analog-) Eingänge für AN0-2,
+	movlw	b'00000011'	; (Analog-) Eingänge für AN0-1,
 	movwf	TRISA		; der Rest Ausgänge
-	movlw	b'00010000'	; RB4/SDI ist Eingang, für RFM
-	movwf	TRISB
-	clrf	TRISC		; alles Ausgänge
+	movlw	b'10010000'	; RB4/SDI, RB7/I2CEN Eingang,
+	movwf	TRISB		; RB5, RB6 Ausgänge
+	clrf	TRISC		; PortC alles Ausgänge
 ; Bank1, OPTION_REG
 	; nach POR stehen alle bits des OPTION-Registers auf 1
 	bcf		OPTION_REG,NOT_RABPU
@@ -309,7 +315,7 @@ InitPic
 ;	0100	1:512 (nach Reset)	2,1		1010	1:32768	135
 ;	0101	1:1024				4,2		1011	1:65536	271
 ; Zeiten sind von PIC zu PIC unterschiedlich (Toleranzen):
-	movlw	b'00010111'	; WDT-Teilerfaktor 1:65536
+	movlw	b'00001011'	; WDT-Teilerfaktor 1:1024 4,2 Sek.
 	movwf	WDTCON
 ;
 ; Konfiguration MSSP für SPI-Mode 0,0
@@ -349,6 +355,7 @@ InitPic
 	movwf	lobyte
 	call	spi16		; RFM im Sleep-Modus
 ;
+; ############################################################
 ; Schalter I2C Ein/Aus (Jumper) auf I2CEN=0/I2CEN=1:
 	btfss	I2CEN		; wenn I2CEN=1, überspringe nä. Bef.
 	goto	Wartung		; I2CEN=0, Jumper gesteckt, Wartung
@@ -357,19 +364,25 @@ InitPic
 ; Spannungsmodul abschalten (Uref und U-Meß-Teiler)
 	bsf		MOSEA		; MOSEA=1, P-CH. MOSFET aus 
 ;
+	call	iicbus_on	; I2C-Bus Ein
+;
 ; LM75 in den shutdown-Modus versetzen:
 	call	sd_on
 ;
 ; Stromsparen I2C-Hardware:
-	call	iicbus_off		; I2CBus aus, Stromsparen,
+	call	iicbus_off		; I2C-Bus aus, Stromsparen,
 	; die PortC-Pins RC3 bis RC6 als Eingänge programmiert!
-; ############################################################
+;
 ; ############################################################
 loop
+	bsf		ledge		; gelbe LED Aus
+;
 	clrwdt				; WDT löschen	
 	sleep				; PIC in den Sleep-Modus versetzen
 ; wecken durch WDT nach der vorprogrammierten Zeit in WDTCON,
 ; dann weiter bei Pkt. 1.
+;
+	bcf		ledge		; gelbe LED Ein
 ;
 loopW
 ;
@@ -439,20 +452,7 @@ Wartung
 	movlw	0x80		; Cursor auf Zeile 1, Spalte 0
 	call	OutLcdCon	; einstellen
 ;
-	movlw	'S'			; Text "Sonde Nr. xxx" ausgeben
-	call	OutLcdDat
-	movlw	'o'
-	call	OutLcdDat
-	movlw	'n'
-	call	OutLcdDat
-	movlw	'd'
-	call	OutLcdDat
-	movlw	'e'
-	call	OutLcdDat
-	movlw	' '
-	call	OutLcdDat
-;
-; Sondennummer ausgeben (Kennung):
+; dreistellige Sondennummer dez. ausgeben (Kennung):
 	movf	txbyte1,w
 	movwf	f0
 	clrf	f1
@@ -468,26 +468,28 @@ LcdAusgabe
 ;
 	call	iicbus_on	; I2C-Bus ein
 ;
-; Lipospannung von Sonde1 in mV:
-	bsf		LC1			; Controller1 ein
-	movlw	0xc0		; Ausgabe in Zeile 2, ab Spalte 0
-	call	OutLcdCon	
-	movf	txbyte2,w
-	movwf	f0
-	movf	txbyte3,w
+	bsf		LC1			; 1. Controller ein
+;
+; ADC-U-Rohwert in Zeile 1 nach der Sondenkennung ausgeben:
+	movlw	0x84		; Ausgabe in Zeile 1, ab Spalte 4
+	call	OutLcdCon
+;
+	movlw	'U'
+	call	OutLcdDat
+;
+	movf	adc_h,w		; High-U-Rohwert => w => f1
 	movwf	f1
-	call	OutDez4		; Daten für UP über f1, f0
-	movlw	' '
-	call	OutLcdDat
-	movlw	'm'
-	call	OutLcdDat
-	movlw	'V'
-	call	OutLcdDat
+	call	HexByteAscii
+	movf	adc_l,w
+	movwf	f0
+	call HexByteAscii
 ;
 ; LM75-"Roh"-Wert auf LCD ausgeben (4 Zeichen)
 	movlw	0x8a		; Ausgabe in Zeile 1, ab Spalte 10:
 	call	OutLcdCon
 ;
+	movlw	'T'
+	call	OutLcdDat
 	movf	lm_high,w	; High-Rohwert LM75 nach f1
 	movwf	f1
 	call	HexByteAscii
@@ -496,6 +498,20 @@ LcdAusgabe
 	movwf	f0
 	call	HexByteAscii
 ;	
+; Ab Zeile 2:
+; Lipospannung der Sonde in mV:
+	movlw	0xc0		; Ausgabe in Zeile 2, ab Spalte 0
+	call	OutLcdCon	
+	movf	umvl,w
+	movwf	f0
+	movf	umvh,w
+	movwf	f1
+	call	OutDez4		; Daten für UP über f1, f0
+	movlw	'm'
+	call	OutLcdDat
+	movlw	'V'
+	call	OutLcdDat
+;
 ; Wandlung u. Temperaturausg. posit. LM75-Meßwerte
 ; High-Byte, Bit 7 testen (0=pos. oder 1=neg. Meßwert)
 	bcf		Negativ		; Vorzeichenbit=0 (UP OutMinus)
@@ -527,24 +543,6 @@ temp_out
 	movlw	'5'			; w='5'
 	call	OutLcdDat	; ASCII-0 oder 5 ausgeben
 	call	OutCelsius	; '°C' ausgeben
-;
-; ADC-U-Rohwert in Zeile 3 ausgeben
-	movlw	0x94		; Ausgabe in Zeile 3, ab Spalte 0
-	call	OutLcdCon
-;
-	movlw	'U'
-	call	OutLcdDat
-	movlw	'a'
-	call	OutLcdDat
-	movlw	' '
-	call	OutLcdDat
-;
-	movf	adc_h,w		; High-U-Rohwert => w => f1
-	movwf	f1
-	call	HexByteAscii
-	movf	adc_l,w
-	movwf	f0
-	call HexByteAscii
 ;
 	bcf		LC1			; Controller1 aus
 ;
@@ -662,7 +660,7 @@ AkkuMess
 	clrf	xw1
 	clrf	xw0
 	call	UMessen1 	; ADC mißt Spannung, wandeln nach
-						; xw1, xw0
+						; xw1, xw0 und adc_h, adc_l (Rohwerte)
 ;
 	movf	xw1,w
 	movwf	f1
@@ -677,11 +675,12 @@ AkkuMess
 	call	Add16
 ;	call	Sub16		; 16 bit-Subtraktion: f = f-xw
 ;
-; Umspeichern zum Senden:
+; Umspeichern zum Anzeigen auf LCD in mV:
 	movf	f0,w
-	movwf	txbyte2
+	movwf	umvl
 	movf	f1,w
-	movwf	txbyte3		; Meßwert steht nun in txbyte2,3
+	movwf	umvh		; Meßwert in mV steht nun in umvh, umvl
+
 	return
 ;
 ; ############################################################
@@ -701,11 +700,13 @@ UM_loop
 	movfw	ADRESH	; obere  2 Bit auslesen
 	movwf	xw1		; obere  2-Bit nach xw1
 	movwf	adc_h	; zur Anzeige auf LCD
+	movwf	txbyte2	; zum Senden
 	bsf	STATUS,RP0	; Bank1
 	movfw	ADRESL	; untere 8 Bit auslesen
 	bcf	STATUS,RP0 	; Bank0
 	movwf	xw0		; untere 8-Bit nach xw0
 	movwf	adc_l	; zur Anzeige auf LCD
+	movwf	txbyte3	; zum Senden
 ;
 	clrf	counter	; warten, damit der ADC sich erholen kann
 UM_warten
