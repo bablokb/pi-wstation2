@@ -15,7 +15,7 @@ import wstation
 
 def twos_comp(val, bits):
   """compute the 2's complement of int value val"""
-  if (val & (1 << (bits - 1))) != 0: # if sign bit is set e.g., 8bit: 128-255
+  if (val & (1 << (bits - 1))):      # if sign bit is set e.g., 8bit: 128-255
     val = val - (1 << bits)          # compute negative value
   return val                         # return positive value as is
   
@@ -36,12 +36,15 @@ class WSDataLM75(wstation.WSDataRemote):
   def convert_data(self,data):
     """ convert data to temperature and voltage """
 
-    [u_low,u_high,t_high,t_low] = data
+    [u_high,u_low,t_high,t_low] = data
     self._logger.msg("DEBUG","sid: %d, U:(%d %d), T:(%d %d)" %
                                          (self._sid,u_low,u_high,t_low,t_high))
+
+    #U is a raw ADC-value with 10-bit resolution
     u = (u_high << 8) + u_low
+    u = int((2*u*2500)/1024)
+
     fraction = 0.5*(t_low >> 7)        # bit7==1: 0.5, else 0.0
-    sign = -1 if t_high >> 7 else +1   # bit7==0: temperature > 0
-    t = sign * twos_comp(t_high,8) + fraction
+    t = twos_comp(t_high,8) + fraction
     return [t,u]
 
