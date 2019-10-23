@@ -102,7 +102,7 @@ class WSDataRemote(wstation.WSDataSensors):
     self._logger.msg("INFO","starting data-collector for %s (type: %s)" %
                      (self._label, self._type))
     if not WSDataRemote._lock.acquire(False):
-      self._logger.msg("INFO","%s: WSDataRemote collector already running" %
+      self._logger.msg("DEBUG","%s: WSDataRemote collector already running" %
                        self._label)
       return
 
