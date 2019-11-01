@@ -299,8 +299,8 @@ InitPic
 ;  0100 1:512 (nach Reset)      2,1	1010	1:32768	135
 ;  0101 1:1024			4,2	1011	1:65536	271
 ; Die Zeiten sind von PIC zu PIC unterschiedlich (Toleranzen):
-;       movlw   b'00010111'     ; WDT-Teilerfaktor 1:65536 (=271Sek)
-        movlw   b'00001011'     ; WDT-Teilerfaktor 1:1024 (=4,2 Sek)
+       movlw   b'00010111'     ; WDT-Teilerfaktor 1:65536 (=271Sek)
+;        movlw   b'00001011'     ; WDT-Teilerfaktor 1:1024 (=4,2 Sek)
 	movwf	WDTCON          ; SWDTEN (Bit 0) = 1
 ;
 ; Konfiguration MSSP für SPI-Mode 0,0
