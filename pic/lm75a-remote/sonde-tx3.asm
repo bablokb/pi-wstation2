@@ -111,6 +111,7 @@ txbyte2		equ	0x29	;Bordspannung, high-Teil
 txbyte3		equ	0x2a	;Bordspannung, low-Teil
 txbyte4		equ	0x2b	;Temperatur, high-Teil
 txbyte5		equ	0x2c	;Temperatur, low-Teil
+txbyte6		equ	0x5c	;Fortschrittszähler
 ; Messungen:
 OffsetTemp	equ	0x2d	;Korrekturwert für Akku-U-Messung
 NrMessung	equ	0x2e	;Zähler für die 64 Temp.-Messungen
@@ -355,6 +356,7 @@ InitPic
 	movlw	0x01
 	movwf	lobyte
 	call	spi16		; RFM im Sleep-Modus
+        clrf    txbyte6         ; Fortschrittszähler löschen
 ;
 ; ############################################################
 ; Schalter I2C Ein/Aus (Jumper) auf I2CEN=0/I2CEN=1:
@@ -410,9 +412,10 @@ loopW
 	movlw	d'100'		; 100ms
 	call	miditime	; warten
 	call	TempMess	; Temp.rohwert auslesen und
-						; speichern in lm_high, lm_low
+				; speichern in lm_high, lm_low
 	call	sd_on		; LM in shutdown versetzen
 	call	iicbus_off	; I2C-Port aus, Stromsparen
+        incf    txbyte6,f       ; Fortschrittszähler erhöhen
 ;
 ; ###########################################################
 	btfss	I2CEN		; wenn I2CEN=1, überspringe nä. Bef.

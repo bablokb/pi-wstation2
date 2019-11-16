@@ -191,7 +191,7 @@ empfaenger
 	movwf	lobyte
 	call	spi16
 ;
-;3. Empfang von fuenf Bytes und speichern:
+;3. Empfang von sechs Bytes und speichern:
 	;1. Byte:
 	movlw	0xb0		;high byte laden
 	movwf	hibyte
@@ -241,6 +241,16 @@ empfaenger
 	call	spi16		;hibyte u. lobyte an RFM übertragen
 	;empf. Byte aus W weiterverarbeiten
 	movwf	rxbyte5		;fünftes empf. Byte speichern
+;
+	;6. Byte:
+	movlw	0xb0		;high byte laden
+	movwf	hibyte
+	movlw	0x00		;low byte laden
+	movwf	lobyte
+	call	waitrfm		;Warten auf Bereitsch. d. Moduls
+	call	spi16		;hibyte u. lobyte an RFM übertragen
+	;empf. Byte aus W weiterverarbeiten
+	movwf	rxbyte6		;sechstes empf. Byte speichern
 ;
 ;4. Empfaenger abschalten 8258h:
 	movlw	0x82		;high byte laden

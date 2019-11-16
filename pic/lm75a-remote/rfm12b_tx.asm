@@ -213,7 +213,7 @@ senden
 	call	waitrfm		;auf RFM-Bereitschaft warten
 	call	spi16		;hibyte u. lobyte ==> RFM
 ;
-;3. fünf Datenbyte senden:
+;3. sechs Datenbyte senden:
 	movlw	0xb8		;high byte laden
 	movwf	hibyte		;W => hibyte
 	movf	txbyte1,W	;Sendebyte1 => W
@@ -237,6 +237,11 @@ senden
 	call	spi16		;hibyte u. lobyte ==> RFM
 ;
 	movf	txbyte5,W	;Sendebyte5 => W
+	movwf	lobyte		;W ==> lobyte
+	call	waitrfm		;auf RFM-Bereitschaft warten
+	call	spi16		;hibyte u. lobyte ==> RFM
+;
+	movf	txbyte6,W	;Sendebyte6 => W		;
 	movwf	lobyte		;W ==> lobyte
 	call	waitrfm		;auf RFM-Bereitschaft warten
 	call	spi16		;hibyte u. lobyte ==> RFM

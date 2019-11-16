@@ -111,6 +111,7 @@ txbyte2		equ	0x29	;Bordspannung, high-Teil
 txbyte3		equ	0x2a	;Bordspannung, low-Teil
 txbyte4		equ	0x2b	;Temperatur, high-Teil
 txbyte5		equ	0x2c	;Temperatur, low-Teil
+txbyte6		equ	0x5c	;Fortschrittszähler
 ; Messungen:
 OffsetTemp	equ	0x2d	;Korrekturwert für Akku-U-Messung
 NrMessung	equ	0x2e	;Zähler für die 64 Temp.-Messungen
@@ -340,6 +341,7 @@ InitPic
 	movlw	0x01
 	movwf	lobyte
 	call	spi16		; RFM im Sleep-Modus
+        clrf    txbyte6         ; Fortschrittszähler zurücksetzen
 ;
 ; Schalter für I2C Ein/Aus:
 	btfss	I2CEN		; wenn I2CEN=1, überspringe nä. Bef.
@@ -397,6 +399,7 @@ loopW
 	clrf	xw1
 	clrf	xw0
 	call	TemperaturX1 ; Mehrfach-Temperaturmessung
+        incf    txbyte6,f         ; Fortschrittszähler
 ;
 ; f1, f0 beinhalten nun die gemessene Temp. (64 Messungen),
 ; Umrechnung der Messwerte unter Berücksichtigung des
@@ -928,6 +931,11 @@ senden
 	call	spi16		;hibyte u. lobyte ==> RFM
 ;
 	movf	txbyte5,W	;Sendebyte5 => W		;
+	movwf	lobyte		;W ==> lobyte
+	call	waitrfm		;auf RFM-Bereitschaft warten
+	call	spi16		;hibyte u. lobyte ==> RFM
+;
+	movf	txbyte6,W	;Sendebyte6 => W		;
 	movwf	lobyte		;W ==> lobyte
 	call	waitrfm		;auf RFM-Bereitschaft warten
 	call	spi16		;hibyte u. lobyte ==> RFM

@@ -97,6 +97,7 @@ rxbyte2		equ	0x28
 rxbyte3		equ	0x29
 rxbyte4		equ	0x2a
 rxbyte5		equ	0x2b
+rxbyte6		equ	0x2c
 ;
 f0			equ	0x30
 f1			equ	0x31
@@ -136,27 +137,32 @@ tim1_temp	equ	0x64
 tim2_temp	equ	0x65
 zeichen		equ	0x66
 ;
+
 ; Matrix, erste Version für vier Sonden:
 ; aktuelle Daten von Sonde 1
 sonde12		equ	0x70
 sonde13		equ	0x71
 sonde14		equ	0x72
 sonde15		equ	0x73
+sonde16         equ	0x6c
 ; aktuelle Daten von Sonde 2
 sonde22		equ	0x74
 sonde23		equ	0x75
 sonde24		equ	0x76
 sonde25		equ	0x77
+sonde26         equ	0x6d
 ; aktuelle Daten von Sonde 3
 sonde32		equ	0x78
 sonde33		equ	0x79
 sonde34		equ	0x7a
 sonde35		equ	0x7b
+sonde36         equ	0x6e
 ; aktuelle Daten von Sonde 4
 sonde42		equ	0x7c
 sonde43		equ	0x7d
 sonde44		equ	0x7e
 sonde45		equ	0x7f
+sonde46         equ	0x6f
 ; Ende Bank0
 ;
 ; ############################################################
@@ -531,6 +537,13 @@ out15
 	movwf	TXREG		; Byte sonde15 senden
 	nop
 ;
+out16
+	btfss	PIR1,TXIF
+	goto	out16
+	movf	sonde16,w
+	movwf	TXREG		; Fortschrittszähler senden
+	nop
+;
 ; ----------------------
 outpw2
 	btfss	PIR1,TXIF	; 2. Sonde, Kennwort
@@ -565,6 +578,13 @@ out25
 	goto	out25
 	movf	sonde25,w
 	movwf	TXREG		; Byte sonde25 senden
+	nop
+;
+out26
+	btfss	PIR1,TXIF
+	goto	out26
+	movf	sonde26,w
+	movwf	TXREG		; Fortschrittszähler senden
 	nop
 ;
 ; ----------------------
@@ -603,6 +623,13 @@ out35
 	movwf	TXREG		; Byte sonde35 senden
 	nop
 ;
+out36
+	btfss	PIR1,TXIF
+	goto	out36
+	movf	sonde36,w
+	movwf	TXREG		; Fortschrittszähler senden
+	nop
+;
 ; ----------------------
 outpw4
 	btfss	PIR1,TXIF	; 4. Sonde, Kennwort
@@ -637,6 +664,13 @@ out45
 	goto	out45
 	movf	sonde45,w
 	movwf	TXREG		; Byte sonde45 senden
+	nop
+;
+out46
+	btfss	PIR1,TXIF
+	goto	out46
+	movf	sonde46,w
+	movwf	TXREG		; Fortschrittszähler senden
 	nop
 ;
 	return
@@ -681,6 +715,8 @@ pw1						; Werte der Sonde1 speichern
 	movwf	sonde14
 	movf	rxbyte5,w
 	movwf	sonde15
+	movf	rxbyte6,w
+	movwf	sonde16
 	return				; Werte Sonde1 gespeichert.
 ;
 pw2						; Werte der Sonde2 speichern
@@ -692,6 +728,8 @@ pw2						; Werte der Sonde2 speichern
 	movwf	sonde24
 	movf	rxbyte5,w
 	movwf	sonde25
+	movf	rxbyte6,w
+	movwf	sonde26
 	return				; Werte Sonde2 gespeichert.
 ;
 pw3						; Werte der Sonde3 speichern
@@ -703,6 +741,8 @@ pw3						; Werte der Sonde3 speichern
 	movwf	sonde34
 	movf	rxbyte5,w
 	movwf	sonde35
+	movf	rxbyte6,w
+	movwf	sonde36
 	return				; Werte Sonde3 gespeichert.
 ;
 pw4						; Werte der Sonde4 speichern
@@ -714,6 +754,8 @@ pw4						; Werte der Sonde4 speichern
 	movwf	sonde44
 	movf	rxbyte5,w
 	movwf	sonde45
+	movf	rxbyte6,w
+	movwf	sonde46
 	return				; Werte Sonde4 gespeichert.
 ;
 ; ############################################################
@@ -731,6 +773,8 @@ testdat
 	movwf	sonde14		; => sonde14
 	movlw	0x00
 	movwf	sonde15		; => sonde15
+	movlw	0x00
+	movwf	sonde16		; => sonde16
 ;
 ; Sonde2:
 	movlw	0x00
@@ -741,6 +785,8 @@ testdat
 	movwf	sonde24		; => sonde24
 	movlw	0x00
 	movwf	sonde25		; => sonde25
+	movlw	0x00
+	movwf	sonde26		; => sonde26
 ;
 ; Sonde3:
 	movlw	0x00
@@ -751,6 +797,8 @@ testdat
 	movwf	sonde34		; => sonde34
 	movlw	0x00
 	movwf	sonde35		; => sonde35
+	movlw	0x00
+	movwf	sonde36		; => sonde36
 ;
 ; Sonde4:
 	movlw	0x00
@@ -761,6 +809,8 @@ testdat
 	movwf	sonde44		; => sonde44
 	movlw	0x00
 	movwf	sonde45		; => sonde45
+	movlw	0x00
+	movwf	sonde46		; => sonde46
 ; Ende Testdaten
 	return
 ;

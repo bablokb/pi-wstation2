@@ -29,6 +29,10 @@ BAUD_RATE = 1200
 PORT      = "/dev/serial0"
 TIMEOUT   = 2
 
+MAX_REMOTE             = 4
+BYTES_REMOTE           = 6
+MAX_UNCHANGED_COUNTERS = 2
+
 # ----------------------------------------------------------------------------
 
 class WSDataRemote(wstation.WSDataSensors):
@@ -46,6 +50,9 @@ class WSDataRemote(wstation.WSDataSensors):
     super(WSDataRemote,self).__init__(group_name,group,options)
     # get sid of current sensor
     self._sid = int(next(param[1] for param in self._params if param[0] == 'sid'))
+    # normaly a sensor will increase the counter every time it sends data
+    # we keep n counters to check if sensor is still alive
+    self.counters = [-1 for i in range(MAX_UNCHANGED_COUNTERS)]
     WSDataRemote._instances[self._sid] = self
     self._logger.msg("DEBUG","created instance for sid: %d" % self._sid)
 
@@ -81,21 +88,43 @@ class WSDataRemote(wstation.WSDataSensors):
 
     # now read data
     try:
-      for i in range(4):
-        data = self._serial_device.read(5);
+      for i in range(MAX_REMOTE):
+        data = self._serial_device.read(BYTES_REMOTE);
         self._logger.msg("DEBUG","received %d bytes: %r" % (len(data),hexlify(data)))
-        if len(data) < 5:
+        if len(data) < BYTES_REMOTE:
           self._logger.msg("DEBUG","incomplete data")
           break
-        sid = data[0]
+        sid     = data[0]
         if sid in WSDataRemote._instances:
-          [t,u] = WSDataRemote._instances[sid].convert_data(data[1:])
-          WSDataRemote._instances[sid].save_values([t,u])
+          if self.check_counter(sid,data):
+            [t,u] = WSDataRemote._instances[sid].convert_data(data[1:-1])
+          else:
+            [t,u] = [0,0]
+            self._logger.msg("DEBUG",
+                             "sid: %d: setting data-values to zero!" % sid)
+            WSDataRemote._instances[sid].save_values([t,u])
         else:
           self._logger.msg("DEBUG","ignoring sid: %d" % sid)
     except:
       self._logger.msg("DEBUG",traceback.format_exc())
 
+  # --- check counter for increments   --------------------------------------
+
+  def check_counter(self,sid,data):
+    counter = data[-1]
+    counters = WSDataRemote._instances[sid].counters
+    self._logger.msg("DEBUG","sid: %d: counter: %d %r" % (sid,counter,counters))
+    if counter == counters[0]:
+      # third time the same counter => set data to zero
+      self._logger.msg("DEBUG","sid: %d: counter not changing!" % sid)
+      alive = False
+    else:
+      alive = True
+    # rotate counters
+    counters.append(counter)
+    counters.pop(0)
+    return alive
+      
   # --- collect data   ------------------------------------------------------
 
   def run(self):
