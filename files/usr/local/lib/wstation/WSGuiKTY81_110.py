@@ -33,9 +33,4 @@ class WSGuiKTY81_110(wstation.WSGuiSensors):
   def _create_childs(self):
     """ create widget-tree for ourself """
 
-  # --- create child widgets   ----------------------------------------------
-
-  def _create_childs(self):
-    """ create widget-tree for ourself """
-
     self._create_standard_childs()
