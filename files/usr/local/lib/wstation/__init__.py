@@ -26,5 +26,6 @@ from . WSGuiDateTime   import WSGuiDateTime   as WSGuiDateTime
 from . WSGuiSensors    import WSGuiSensors    as WSGuiSensors
 from . WSGuiBME280     import WSGuiBME280     as WSGuiBME280
 from . WSGuiKTY81_110  import WSGuiKTY81_110  as WSGuiKTY81_110
+from . WSGuiLM75       import WSGuiLM75       as WSGuiLM75
 from . WSGuiOWM        import WSGuiOWM        as WSGuiOWM
 from . WSGuiOWMCurrent import WSGuiOWMCurrent as WSGuiOWMCurrent
