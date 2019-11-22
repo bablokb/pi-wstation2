@@ -102,7 +102,7 @@ class WSDataRemote(wstation.WSDataSensors):
             [t,u] = [0,0]
             self._logger.msg("DEBUG",
                              "sid: %d: setting data-values to zero!" % sid)
-            WSDataRemote._instances[sid].save_values([t,u])
+          WSDataRemote._instances[sid].save_values([t,u])
         else:
           self._logger.msg("DEBUG","ignoring sid: %d" % sid)
     except:
